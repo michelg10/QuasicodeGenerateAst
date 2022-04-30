@@ -7,44 +7,73 @@ func stripStringOfSpaces(_ str: String.SubSequence) -> String {
 
 let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClasses"
 
+defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
+    "AstArrayType   ; contains: AstType",
+    "AstClassType   ; name: Token, templateType: AstType?",
+    "AstIntType     ; ",
+    "AstDoubleType  ; ",
+    "AstBooleanType ; ",
+    "AstAnyType     ; ",
+], additionalVisitorTypes: [
+    "String"
+])
+
 defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
-    "Literal         ; value: Any",
-    "This            ; keyword: Token",
-    "Super           ; keyword: Token, method: Token",
-    "Variable        ; name: Token",
-    "Subscript       ; expression: Expr, index: Expr",
-    "Call            ; callee: Expr, paren: Token, arguments: [Expr]",
-    "Get             ; object: Expr, name: Token",
-    "Unary           ; opr: Token, right: Expr",
-    "Cast            ; toType: QsType, value: Expr",
-    "ArrayAllocation ; contains: QsType, capacity: Expr",
-    "ClassAllocation ; classType: QsClass",
-    "Binary          ; left: Expr, opr: Token, right: Expr",
-    "Set             ; to: Expr, toType: QsType?, value: Expr"
+    "GroupingExpr        ; expression: Expr",
+    "LiteralExpr         ; value: Any?",
+    "ThisExpr            ; keyword: Token",
+    "SuperExpr           ; keyword: Token, property: Token",
+    "VariableExpr        ; name: Token",
+    "SubscriptExpr       ; expression: Expr, index: Expr",
+    "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr]",
+    "GetExpr             ; object: Expr, name: Token",
+    "UnaryExpr           ; opr: Token, right: Expr",
+    "CastExpr            ; toType: AstType, value: Expr",
+    "ArrayAllocationExpr ; contains: AstType, capacity: Expr",
+    "ClassAllocationExpr ; classType: AstClassType",
+    "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
+    "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
+    "SetExpr             ; to: Expr, annotation: AstType?, value: Expr",
+], additionalVisitorTypes: [
+    "String"
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "Class           ; name: Token, superclass: Variable, methods: [Method], staticMethods: [Method]",
-    "Method          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: Function",
-    "Function        ; name: Token, params: [Expr], body: [Stmt]",
-    "Expression      ; expression: Expr",
-    "If              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [If], elseBranch: [Stmt]?",
-    "Output          ; expressions: [Expr]",
-    "Input           ; expressions: [Expr]",
-    "Return          ; keyword: Token, value: Expr",
-    "For             ; variable: Expr, loopVariable: Expr"
+    "ClassStmt           ; name: Token, superclass: VariableExpr, methods: [MethodStmt], staticMethods: [MethodStmt]",
+    "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
+    "FunctionStmt        ; name: Token, params: [FunctionParams], body: [Stmt]",
+    "ExpressionStmt      ; expression: Expr",
+    "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
+    "OutputStmt          ; expressions: [Expr]",
+    "InputStmt           ; expressions: [Expr]",
+    "ReturnStmt          ; keyword: Token, value: Expr",
+    "LoopFromStmt        ; variable: Expr, loopVariable: Expr, lRange: Expr, rRange: Expr, statements: [Stmt]",
+    "WhileStmt           ; expression: Expr, statements: [Stmt]",
+    "BreakStmt           ; keyword: Token",
+    "ContinueStmt        ; keyword: Token",
+], additionalVisitorTypes: [
+    "String"
 ])
 
-func defineAst(outputDir: String, baseName: String, typed: Bool, types: [String]) {
+func defineAst(outputDir: String, baseName: String, typed: Bool, types: [String], additionalVisitorTypes: [String]) {
+    var visitorTypes = additionalVisitorTypes
+    visitorTypes.insert("", at: 0)
+    
     let path = "\(outputDir)/\(baseName).swift"
     
     var out = ""
     
     out += """
 protocol \(baseName) {
-    func accept(visitor: \(baseName)Visitor)
 
 """
+    
+    for visitorType in visitorTypes {
+        out += """
+    func accept(visitor: \(baseName)\(visitorType)Visitor)\(visitorType == "" ? "" : " -> \(visitorType)")
+
+"""
+    }
     
     if typed {
         out += """
@@ -59,13 +88,13 @@ protocol \(baseName) {
 
 """
     
-    defineVisitor(out: &out, baseName: baseName, types: types)
+    defineVisitor(out: &out, baseName: baseName, types: types, visitorTypes: visitorTypes)
     
     for type in types {
         let typeInformation = type.split(separator: ";")
         let className = stripStringOfSpaces(typeInformation[0])
         let fields = stripStringOfSpaces(typeInformation[1]) + (typed ? ", type: QsType?" : "")
-        defineType(out: &out, baseName: baseName, className: String(className), fieldList: String(fields))
+        defineType(out: &out, baseName: baseName, className: String(className), fieldList: String(fields), visitorTypes: visitorTypes)
     }
     
     do {
@@ -75,26 +104,29 @@ protocol \(baseName) {
     }
 }
 
-func defineVisitor(out: inout String, baseName: String, types: [String]) {
-    out+="""
-protocol \(baseName)Visitor {
-
-"""
-    for type in types {
-        let typeName = stripStringOfSpaces(type.split(separator: ";")[0])
+func defineVisitor(out: inout String, baseName: String, types: [String], visitorTypes: [String]) {
+    
+    for visitorType in visitorTypes {
         out+="""
-    func visit\(typeName)\(baseName)(\(baseName.lowercased()): \(typeName))
+    protocol \(baseName)\(visitorType)Visitor {
 
-"""
+    """
+        for type in types {
+            let typeName = stripStringOfSpaces(type.split(separator: ";")[0])
+            out+="""
+        func visit\(typeName)\(visitorType)(\(baseName.lowercased()): \(typeName)) \(visitorType == "" ? "" : "-> \(visitorType)")
+
+    """
+        }
+        out+="""
     }
-    out+="""
+
+
+    """
+    }
 }
 
-
-"""
-}
-
-func defineType(out: inout String, baseName: String, className: String, fieldList: String) {
+func defineType(out: inout String, baseName: String, className: String, fieldList: String, visitorTypes: [String]) {
     out+="""
 class \(className): \(baseName) {
 
@@ -125,10 +157,15 @@ class \(className): \(baseName) {
 """
     
     // the accept method
-    out+="""
-    func accept(visitor: \(baseName)Visitor) {
-        visitor.visit\(className)\(baseName)(\(baseName.lowercased()): self)
+    for visitorType in visitorTypes {
+        out+="""
+    func accept(visitor: \(baseName)\(visitorType)Visitor)\(visitorType == "" ? "" : " -> \(visitorType)") {
+        visitor.visit\(className)\(visitorType)(\(baseName.lowercased()): self)
     }
+
+"""
+    }
+    out+="""
 }
 
 
