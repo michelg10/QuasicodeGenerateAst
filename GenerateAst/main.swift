@@ -39,7 +39,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "ClassStmt           ; name: Token, superclass: VariableExpr, methods: [MethodStmt], staticMethods: [MethodStmt]",
+    "ClassStmt           ; name: Token, superclass: VariableExpr?, methods: [MethodStmt], staticMethods: [MethodStmt]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; name: Token, params: [FunctionParams], body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
@@ -47,7 +47,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "OutputStmt          ; expressions: [Expr]",
     "InputStmt           ; expressions: [Expr]",
     "ReturnStmt          ; keyword: Token, value: Expr",
-    "LoopFromStmt        ; variable: Expr, loopVariable: Expr, lRange: Expr, rRange: Expr, statements: [Stmt]",
+    "LoopFromStmt        ; variable: Expr, lRange: Expr, rRange: Expr, statements: [Stmt]",
     "WhileStmt           ; expression: Expr, statements: [Stmt]",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
