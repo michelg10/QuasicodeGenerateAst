@@ -8,12 +8,12 @@ func stripStringOfSpaces(_ str: String.SubSequence) -> String {
 let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClasses"
 
 defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
-    "AstArrayType   ; contains: AstType",
-    "AstClassType   ; name: Token, templateType: AstType?",
-    "AstIntType     ; ",
-    "AstDoubleType  ; ",
-    "AstBooleanType ; ",
-    "AstAnyType     ; ",
+    "AstArrayType        ; contains: AstType",
+    "AstClassType        ; name: Token, templateType: AstType?",
+    "AstIntType          ; ",
+    "AstDoubleType       ; ",
+    "AstBooleanType      ; ",
+    "AstAnyType          ; ",
 ], additionalVisitorTypes: [
     "String"
 ])
@@ -42,7 +42,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "ClassStmt           ; name: Token, superclass: VariableExpr?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassFields], staticFields: [ClassFields]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; name: Token, params: [FunctionParams], body: [Stmt]",
+    "FunctionStmt        ; name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
