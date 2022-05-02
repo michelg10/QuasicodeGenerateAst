@@ -47,7 +47,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
     "InputStmt           ; expressions: [Expr]",
-    "ReturnStmt          ; keyword: Token, value: Expr",
+    "ReturnStmt          ; keyword: Token, value: Expr?",
     "LoopFromStmt        ; variable: Expr, lRange: Expr, rRange: Expr, statements: [Stmt]",
     "WhileStmt           ; expression: Expr, statements: [Stmt]",
     "BreakStmt           ; keyword: Token",
