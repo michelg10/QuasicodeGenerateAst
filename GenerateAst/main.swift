@@ -9,7 +9,8 @@ let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClas
 
 defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
     "AstArrayType        ; contains: AstType",
-    "AstClassType        ; name: Token, templateType: AstType?",
+    "AstClassType        ; name: Token, templateTypes: [AstType]?",
+    "AstTemplateTypeName ; name: Token",
     "AstIntType          ; ",
     "AstDoubleType       ; ",
     "AstBooleanType      ; ",
@@ -40,7 +41,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "ClassStmt           ; name: Token, superclass: VariableExpr?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassFields], staticFields: [ClassFields]",
+    "ClassStmt           ; name: Token, templateTypes: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassFields], staticFields: [ClassFields]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
