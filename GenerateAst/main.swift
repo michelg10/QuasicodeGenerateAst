@@ -25,7 +25,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "ArrayLiteralExpr    ; values: [Expr]",
     "ThisExpr            ; keyword: Token",
     "SuperExpr           ; keyword: Token, property: Token",
-    "VariableExpr        ; name: Token",
+    "VariableExpr        ; name: Token, symbolTableIndex: Int?, runtimeLocation: RuntimeLocation?",
     "SubscriptExpr       ; expression: Expr, index: Expr",
     "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr]",
     "GetExpr             ; object: Expr, name: Token",
@@ -35,13 +35,13 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr]",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
-    "SetExpr             ; to: Expr, annotation: AstType?, value: Expr",
+    "SetExpr             ; to: Expr, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
 ], additionalVisitorTypes: [
     "String"
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "ClassStmt           ; name: Token, templateTypes: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassFields], staticFields: [ClassFields]",
+    "ClassStmt           ; name: Token, templateTypes: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
