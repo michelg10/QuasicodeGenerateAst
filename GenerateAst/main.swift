@@ -7,16 +7,23 @@ func stripStringOfSpaces(_ str: String.SubSequence) -> String {
 
 let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClasses"
 
+struct VisitorType {
+    var type: String?
+    var throwable: Bool
+}
+
 defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
     "AstArrayType        ; contains: AstType",
-    "AstClassType        ; name: Token, templateTypes: [AstType]?",
-    "AstTemplateTypeName ; name: Token",
+    "AstClassType        ; name: Token, templateArguments: [AstType]?",
+    "AstTemplateTypeName ; belongingClass: String, name: Token",
     "AstIntType          ; ",
     "AstDoubleType       ; ",
     "AstBooleanType      ; ",
     "AstAnyType          ; ",
-], additionalVisitorTypes: [
-    "String"
+], visitorTypes: [
+    .init(type: nil, throwable: false),
+    .init(type: "String", throwable: false),
+    .init(type: "AstType", throwable: true),
 ])
 
 defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
@@ -36,14 +43,15 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
     "SetExpr             ; to: Expr, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
-], additionalVisitorTypes: [
-    "String"
+], visitorTypes: [
+    .init(type: nil, throwable: false),
+    .init(type: "String", throwable: false),
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "ClassStmt           ; name: Token, templateTypes: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
+    "ClassStmt           ; keyword: Token, name: Token, templateParameters: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
+    "FunctionStmt        ; keyword: Token, name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
@@ -53,13 +61,24 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "WhileStmt           ; expression: Expr, statements: [Stmt]",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
-], additionalVisitorTypes: [
-    "String"
+], visitorTypes: [
+    .init(type: nil, throwable: false),
+    .init(type: "String", throwable: false),
 ])
 
-func defineAst(outputDir: String, baseName: String, typed: Bool, types: [String], additionalVisitorTypes: [String]) {
-    var visitorTypes = additionalVisitorTypes
-    visitorTypes.insert("", at: 0)
+func indent(_ indentLevel: Int = 1) -> String {
+    var value = ""
+    for _ in 0..<indentLevel {
+        value = value + "    "
+    }
+    return value
+}
+
+func acceptFunctionSignature(baseName: String, visitorType: VisitorType) -> String {
+    return "func accept(visitor: \(baseName)\(visitorType.type ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
+}
+
+func defineAst(outputDir: String, baseName: String, typed: Bool, types: [String], visitorTypes: [VisitorType]) {
     
     let path = "\(outputDir)/\(baseName).swift"
     
@@ -71,10 +90,7 @@ protocol \(baseName) {
 """
     
     for visitorType in visitorTypes {
-        out += """
-    func accept(visitor: \(baseName)\(visitorType)Visitor)\(visitorType == "" ? "" : " -> \(visitorType)")
-
-"""
+        out += indent()+acceptFunctionSignature(baseName: baseName, visitorType: visitorType) + "\n"
     }
     
     if typed {
@@ -106,17 +122,17 @@ protocol \(baseName) {
     }
 }
 
-func defineVisitor(out: inout String, baseName: String, types: [String], visitorTypes: [String]) {
+func defineVisitor(out: inout String, baseName: String, types: [String], visitorTypes: [VisitorType]) {
     
     for visitorType in visitorTypes {
         out+="""
-    protocol \(baseName)\(visitorType)Visitor {
+    protocol \(baseName)\(visitorType.type ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
 
     """
         for type in types {
             let typeName = stripStringOfSpaces(type.split(separator: ";")[0])
             out+="""
-        func visit\(typeName)\(visitorType)(\(baseName.lowercased()): \(typeName)) \(visitorType == "" ? "" : "-> \(visitorType)")
+        func visit\(typeName)\(visitorType.type ?? "")(\(baseName.lowercased()): \(typeName))\(visitorType.throwable ? " throws" : "") \(visitorType.type == nil ? "" : "-> \(visitorType.type!)")
 
     """
         }
@@ -128,7 +144,7 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     }
 }
 
-func defineType(out: inout String, baseName: String, className: String, fieldList: String, visitorTypes: [String]) {
+func defineType(out: inout String, baseName: String, className: String, fieldList: String, visitorTypes: [VisitorType]) {
     out+="""
 class \(className): \(baseName) {
 
@@ -150,7 +166,7 @@ class \(className): \(baseName) {
 """
     for field in fields {
         let name = stripStringOfSpaces(field.split(separator: ":")[0])
-        out+="        self.\(name) = \(name)\n"
+        out+="\(indent(2))self.\(name) = \(name)\n"
     }
     out+="""
     }
@@ -161,8 +177,8 @@ class \(className): \(baseName) {
     // the accept method
     for visitorType in visitorTypes {
         out+="""
-    func accept(visitor: \(baseName)\(visitorType)Visitor)\(visitorType == "" ? "" : " -> \(visitorType)") {
-        visitor.visit\(className)\(visitorType)(\(baseName.lowercased()): self)
+    \(acceptFunctionSignature(baseName: baseName, visitorType: visitorType)) {
+        \(visitorType.throwable ? "try " : "")visitor.visit\(className)\(visitorType.type ?? "")(\(baseName.lowercased()): self)
     }
 
 """
