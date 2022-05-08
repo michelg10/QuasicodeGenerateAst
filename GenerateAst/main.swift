@@ -45,6 +45,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "SetExpr             ; to: Expr, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
 ], visitorTypes: [
     .init(type: nil, throwable: false),
+    .init(type: nil, throwable: true),
     .init(type: "String", throwable: false),
 ])
 
