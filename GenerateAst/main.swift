@@ -45,7 +45,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "SetExpr             ; to: Expr, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
 ], visitorTypes: [
     .init(type: nil, throwable: false),
-    .init(type: nil, throwable: true),
+    .init(type: "Expr", throwable: true),
     .init(type: "String", throwable: false),
 ])
 
@@ -64,6 +64,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "ContinueStmt        ; keyword: Token",
 ], visitorTypes: [
     .init(type: nil, throwable: false),
+    .init(type: "Stmt", throwable: false),
     .init(type: "String", throwable: false),
 ])
 
@@ -168,6 +169,20 @@ class \(className): \(baseName) {
     for field in fields {
         let name = stripStringOfSpaces(field.split(separator: ":")[0])
         out+="\(indent(2))self.\(name) = \(name)\n"
+    }
+    out+="""
+    }
+
+"""
+    
+    // copying initializer
+    out+="""
+    init(_ objectToCopy: \(className)) {
+
+"""
+    for field in fields {
+        let name = stripStringOfSpaces(field.split(separator: ":")[0])
+        out+="\(indent(2))self.\(name) = objectToCopy.\(name)\n"
     }
     out+="""
     }
