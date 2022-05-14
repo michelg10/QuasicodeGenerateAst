@@ -30,9 +30,9 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "GroupingExpr        ; expression: Expr",
     "LiteralExpr         ; value: Any?",
     "ArrayLiteralExpr    ; values: [Expr]",
-    "ThisExpr            ; keyword: Token",
-    "SuperExpr           ; keyword: Token, property: Token",
-    "VariableExpr        ; name: Token, symbolTableIndex: Int?, runtimeLocation: RuntimeLocation?",
+    "ThisExpr            ; keyword: Token, symbolTableIndex: Int?",
+    "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?",
+    "VariableExpr        ; name: Token, symbolTableIndex: Int?",
     "SubscriptExpr       ; expression: Expr, index: Expr",
     "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr]",
     "GetExpr             ; object: Expr, name: Token",
@@ -42,9 +42,10 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr]",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
-    "SetExpr             ; to: Expr, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
+    "SetExpr             ; to: Expr, annotationColon: Token?, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
 ], visitorTypes: [
     .init(type: nil, throwable: false),
+    .init(type: nil, throwable: true),
     .init(type: "Expr", throwable: true),
     .init(type: "String", throwable: false),
 ])
@@ -52,7 +53,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
     "ClassStmt           ; keyword: Token, name: Token, templateParameters: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; keyword: Token, name: Token, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
+    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, params: [FunctionParam], annotation: AstType, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
