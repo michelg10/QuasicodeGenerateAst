@@ -51,7 +51,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
-    "ClassStmt           ; keyword: Token, name: Token, thisSymbolTableIndex: Int?, templateParameters: [Token]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
+    "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, params: [FunctionParam], annotation: AstType, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
