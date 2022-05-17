@@ -12,7 +12,7 @@ struct VisitorType {
     var throwable: Bool
 }
 
-defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
+defineAst(outputDir: outputDir, baseName: "AstType", typed: false, includesLocation: true, types: [
     "AstArrayType        ; contains: AstType",
     "AstClassType        ; name: Token, templateArguments: [AstType]?",
     "AstTemplateTypeName ; belongingClass: String, name: Token",
@@ -26,7 +26,7 @@ defineAst(outputDir: outputDir, baseName: "AstType", typed: false, types: [
     .init(type: "AstType", throwable: true),
 ])
 
-defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
+defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation: true, types: [
     "GroupingExpr        ; expression: Expr",
     "LiteralExpr         ; value: Any?",
     "ArrayLiteralExpr    ; values: [Expr]",
@@ -51,10 +51,10 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, types: [
     .init(type: "String", throwable: false),
 ])
 
-defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, types: [
+defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
     "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, params: [FunctionParam], annotation: AstType, body: [Stmt]",
+    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
@@ -82,7 +82,12 @@ func acceptFunctionSignature(baseName: String, visitorType: VisitorType) -> Stri
     return "func accept(visitor: \(baseName)\(visitorType.type ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
 }
 
-func defineAst(outputDir: String, baseName: String, typed: Bool, types: [String], visitorTypes: [VisitorType]) {
+struct Variable {
+    var name: String
+    var type: String
+}
+
+func defineAst(outputDir: String, baseName: String, typed: Bool, includesLocation: Bool, types: [String], visitorTypes: [VisitorType]) {
     
     let path = "\(outputDir)/\(baseName).swift"
     
@@ -103,6 +108,13 @@ protocol \(baseName) {
     
     """
     }
+    if includesLocation {
+        out += """
+        var startLocation: InterpreterLocation { get set }
+        var endLocation: InterpreterLocation { get set }
+    
+    """
+    }
     
     out += """
 }
@@ -115,8 +127,23 @@ protocol \(baseName) {
     for type in types {
         let typeInformation = type.split(separator: ";")
         let className = stripStringOfSpaces(typeInformation[0])
-        let fields = stripStringOfSpaces(typeInformation[1]) + (typed ? ", type: QsType?" : "")
-        defineType(out: &out, baseName: baseName, className: String(className), fieldList: String(fields), visitorTypes: visitorTypes)
+//        var fields =  + (typed ? ", type: QsType?" : "") + (includesLocation ? ", startLocation: InterpreterLocation, endLocation: InterpreterLocation" : "")
+        var fields = stripStringOfSpaces(typeInformation[1]).split(separator: ",")
+        var fieldList: [Variable] = []
+        for field in fields {
+            let strippedField = stripStringOfSpaces(field)
+            let separatedField = strippedField.split(separator: ":")
+            fieldList.append(.init(name: String(stripStringOfSpaces(separatedField[0])), type: String(stripStringOfSpaces(separatedField[1]))))
+        }
+        if typed {
+            fieldList.append(.init(name: "type", type: "QsType?"))
+        }
+        if includesLocation {
+            fieldList.append(.init(name: "startLocation", type: "InterpreterLocation"))
+            fieldList.append(.init(name: "endLocation", type: "InterpreterLocation"))
+        }
+        
+        defineType(out: &out, baseName: baseName, className: String(className), fieldList: fieldList, visitorTypes: visitorTypes)
     }
     
     do {
@@ -148,29 +175,35 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     }
 }
 
-func defineType(out: inout String, baseName: String, className: String, fieldList: String, visitorTypes: [VisitorType]) {
+func defineType(out: inout String, baseName: String, className: String, fieldList: [Variable], visitorTypes: [VisitorType]) {
     out+="""
 class \(className): \(baseName) {
 
 """
     // the fields
-    let fields = fieldList.split(separator: ",")
-    for field in fields {
+    for field in fieldList {
         out+="""
-    var \(stripStringOfSpaces(field))
+    var \(field.name): \(field.type)
 
 """
     }
     
     // initializer
+    let initializerList = fieldList.reduce("", { partialResult, next in
+        var result = partialResult
+        if partialResult != "" {
+            result += ", "
+        }
+        result+="\(next.name): \(next.type)"
+        return result
+    })
     out+="""
     
-    init(\(fieldList)) {
+    init(\(initializerList)) {
 
 """
-    for field in fields {
-        let name = stripStringOfSpaces(field.split(separator: ":")[0])
-        out+="\(indent(2))self.\(name) = \(name)\n"
+    for field in fieldList {
+        out+="\(indent(2))self.\(field.name) = \(field.name)\n"
     }
     out+="""
     }
@@ -182,9 +215,8 @@ class \(className): \(baseName) {
     init(_ objectToCopy: \(className)) {
 
 """
-    for field in fields {
-        let name = stripStringOfSpaces(field.split(separator: ":")[0])
-        out+="\(indent(2))self.\(name) = objectToCopy.\(name)\n"
+    for field in fieldList {
+        out+="\(indent(2))self.\(field.name) = objectToCopy.\(field.name)\n"
     }
     out+="""
     }
