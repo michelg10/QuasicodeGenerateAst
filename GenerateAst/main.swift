@@ -24,12 +24,14 @@ defineAst(outputDir: outputDir, baseName: "AstType", typed: false, includesLocat
     .init(type: nil, throwable: false),
     .init(type: "String", throwable: false),
     .init(type: "AstType", throwable: true),
+    .init(type: "QsType", throwable: false)
 ])
 
 defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation: true, types: [
     "GroupingExpr        ; expression: Expr",
     "LiteralExpr         ; value: Any?",
     "ArrayLiteralExpr    ; values: [Expr]",
+    "StaticClassExpr     ; classType: AstClassType, property: Token",
     "ThisExpr            ; keyword: Token, symbolTableIndex: Int?",
     "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?",
     "VariableExpr        ; name: Token, symbolTableIndex: Int?",
@@ -54,7 +56,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
     "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
+    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
     "OutputStmt          ; expressions: [Expr]",
