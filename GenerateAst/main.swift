@@ -54,18 +54,19 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
-    "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
+    "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, scopeIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
+    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, scopeIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
-    "IfStmt              ; condition: Expr, thenBranch: [Stmt], elseIfBranches: [IfStmt], elseBranch: [Stmt]?",
+    "IfStmt              ; condition: Expr, thenBranch: BlockStmt, elseIfBranches: [IfStmt], elseBranch: BlockStmt?",
     "OutputStmt          ; expressions: [Expr]",
     "InputStmt           ; expressions: [Expr]",
     "ReturnStmt          ; keyword: Token, value: Expr?",
-    "LoopFromStmt        ; variable: Expr, lRange: Expr, rRange: Expr, statements: [Stmt]",
-    "WhileStmt           ; expression: Expr, statements: [Stmt]",
+    "LoopFromStmt        ; variable: Expr, lRange: Expr, rRange: Expr, body: BlockStmt",
+    "WhileStmt           ; expression: Expr, body: BlockStmt",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
+    "BlockStmt           ; statements: [Stmt], scopeIndex: Int?"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
     .init(type: "Stmt", throwable: false),
