@@ -36,7 +36,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?",
     "VariableExpr        ; name: Token, symbolTableIndex: Int?",
     "SubscriptExpr       ; expression: Expr, index: Expr",
-    "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr]",
+    "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr], uniqueFunctionCall: Int?, polymorphicCallClassIdToIdDict: [Int : Int]?",
     "GetExpr             ; object: Expr, name: Token",
     "UnaryExpr           ; opr: Token, right: Expr",
     "CastExpr            ; toType: AstType, value: Expr",
@@ -130,13 +130,13 @@ protocol \(baseName) {
     for type in types {
         let typeInformation = type.split(separator: ";")
         let className = stripStringOfSpaces(typeInformation[0])
-//        var fields =  + (typed ? ", type: QsType?" : "") + (includesLocation ? ", startLocation: InterpreterLocation, endLocation: InterpreterLocation" : "")
         var fields = stripStringOfSpaces(typeInformation[1]).split(separator: ",")
         var fieldList: [Variable] = []
         for field in fields {
             let strippedField = stripStringOfSpaces(field)
-            let separatedField = strippedField.split(separator: ":")
-            fieldList.append(.init(name: String(stripStringOfSpaces(separatedField[0])), type: String(stripStringOfSpaces(separatedField[1]))))
+            let fieldSeparator = strippedField.firstIndex(of: ":")!
+            let afterFieldSeparator = strippedField.index(fieldSeparator, offsetBy: 1)
+            fieldList.append(.init(name: String(stripStringOfSpaces(strippedField[strippedField.startIndex..<fieldSeparator])), type: String(stripStringOfSpaces(strippedField[afterFieldSeparator...]))))
         }
         if typed {
             fieldList.append(.init(name: "type", type: "QsType?"))
