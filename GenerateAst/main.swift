@@ -184,13 +184,16 @@ func defineType(out: inout String, baseName: String, className: String, fieldLis
 class \(className): \(baseName) {
 
 """
+    print(className)
     // the fields
     for field in fieldList {
         out+="""
     var \(field.name): \(field.type)
 
 """
+        print("+ \(field.name): \(field.type)")
     }
+    print()
     
     // initializer
     let initializerList = fieldList.reduce("", { partialResult, next in
