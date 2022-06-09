@@ -44,7 +44,8 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr]",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
-    "SetExpr             ; to: Expr, annotationColon: Token?, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
+    "SetExpr             ; to: Expr, value: Expr",
+    "AssignExpr          ; to: VariableExpr, annotationColon: Token?, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
     "ImplicitCastExpr    ; expression: Expr"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
