@@ -31,7 +31,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "GroupingExpr        ; expression: Expr",
     "LiteralExpr         ; value: Any?",
     "ArrayLiteralExpr    ; values: [Expr]",
-    "StaticClassExpr     ; classType: AstClassType, property: Token, propertyIndex: Int?",
+    "StaticClassExpr     ; classType: AstClassType, classId: Int?, property: Token, propertyIndex: Int?",
     "ThisExpr            ; keyword: Token, symbolTableIndex: Int?",
     "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?, propertyIndex: Int?",
     "VariableExpr        ; name: Token, symbolTableIndex: Int?",
