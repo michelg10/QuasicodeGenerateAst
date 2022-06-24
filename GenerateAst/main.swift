@@ -36,7 +36,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?, propertyId: Int?",
     "VariableExpr        ; name: Token, symbolTableIndex: Int?",
     "SubscriptExpr       ; expression: Expr, index: Expr",
-    "CallExpr            ; callee: Expr, paren: Token, arguments: [Expr], uniqueFunctionCall: Int?, polymorphicCallClassIdToIdDict: [Int : Int]?",
+    "CallExpr            ; object: Expr?, property: Token, paren: Token, arguments: [Expr], uniqueFunctionCall: Int?, polymorphicCallClassIdToIdDict: [Int : Int]?",
     "GetExpr             ; object: Expr, property: Token, propertyId: Int?",
     "UnaryExpr           ; opr: Token, right: Expr",
     "CastExpr            ; toType: AstType, value: Expr",
