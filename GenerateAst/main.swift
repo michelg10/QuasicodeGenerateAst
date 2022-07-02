@@ -33,7 +33,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "ArrayLiteralExpr    ; values: [Expr]",
     "StaticClassExpr     ; classType: AstClassType, classId: Int?",
     "ThisExpr            ; keyword: Token, symbolTableIndex: Int?",
-    "SuperExpr           ; keyword: Token, property: Token, symbolTableIndex: Int?, propertyId: Int?",
+    "SuperExpr           ; keyword: Token, property: Token, propertyId: Int?",
     "VariableExpr        ; name: Token, symbolTableIndex: Int?",
     "SubscriptExpr       ; expression: Expr, index: Expr, accessingInstanceVariable: Int?",
     "CallExpr            ; object: Expr?, property: Token, paren: Token, arguments: [Expr], uniqueFunctionCall: Int?, polymorphicCallClassIdToIdDict: [Int : Int]?",
@@ -57,7 +57,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
-    "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, thisSymbolTableIndex: Int?, scopeIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
+    "ClassStmt           ; keyword: Token, name: Token, symbolTableIndex: Int?, instanceThisSymbolTableIndex: Int?, staticThisSymbolTableIndex: Int?, scopeIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], staticMethods: [MethodStmt], fields: [ClassField], staticFields: [ClassField]",
     "MethodStmt          ; isStatic: Bool, staticKeyword: Token?, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, scopeIndex: Int?, params: [FunctionParam], annotation: AstType?, body: [Stmt]",
     "ExpressionStmt      ; expression: Expr",
