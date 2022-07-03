@@ -110,6 +110,7 @@ protocol \(baseName) {
     
     if typed {
         out += """
+        func fallbackToErrorType(assignable: Bool)
         var type: QsType? { get set }
     
     """
@@ -149,7 +150,7 @@ protocol \(baseName) {
             fieldList.append(.init(name: "endLocation", type: "InterpreterLocation"))
         }
         
-        defineType(out: &out, baseName: baseName, className: String(className), fieldList: fieldList, visitorTypes: visitorTypes)
+        defineType(out: &out, baseName: baseName, className: String(className), includeFallbackToErrorType: typed, fieldList: fieldList, visitorTypes: visitorTypes)
     }
     
     do {
@@ -181,7 +182,7 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     }
 }
 
-func defineType(out: inout String, baseName: String, className: String, fieldList: [Variable], visitorTypes: [VisitorType]) {
+func defineType(out: inout String, baseName: String, className: String, includeFallbackToErrorType: Bool, fieldList: [Variable], visitorTypes: [VisitorType]) {
     out+="""
 class \(className): \(baseName) {
 
@@ -233,6 +234,18 @@ class \(className): \(baseName) {
 
 """
     
+    // the fallback method
+    if includeFallbackToErrorType {
+        out+="""
+            func fallbackToErrorType(assignable: Bool) {
+                if self.type == nil {
+                    self.type = QsErrorType(assignable: assignable)
+                }
+            }
+        
+        
+        """
+    }
     // the accept method
     for visitorType in visitorTypes {
         out+="""
