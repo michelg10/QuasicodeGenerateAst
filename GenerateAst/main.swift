@@ -73,6 +73,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "ExitStmt            ; keyword: Token"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
+    .init(type: nil, throwable: true),
     .init(type: "Stmt", throwable: false),
     .init(type: "String", throwable: false),
 ])
