@@ -69,7 +69,8 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "WhileStmt           ; expression: Expr, body: BlockStmt",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
-    "BlockStmt           ; statements: [Stmt], scopeIndex: Int?"
+    "BlockStmt           ; statements: [Stmt], scopeIndex: Int?",
+    "ExitStmt            ; keyword: Token"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
     .init(type: "Stmt", throwable: false),
