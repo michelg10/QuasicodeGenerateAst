@@ -8,7 +8,20 @@ func stripStringOfSpaces(_ str: String.SubSequence) -> String {
 let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClasses"
 
 struct VisitorType {
+    internal init(type: String? = nil, displayType: String? = nil, throwable: Bool) {
+        self.type = type
+        self.displayType = displayType
+        self.throwable = throwable
+    }
+    
+    internal init(type: String? = nil, throwable: Bool) {
+        self.type = type
+        self.displayType = type
+        self.throwable = throwable
+    }
+    
     var type: String?
+    var displayType: String?
     var throwable: Bool
 }
 
@@ -54,6 +67,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     .init(type: "QsType", throwable: true),
     .init(type: "Expr", throwable: true),
     .init(type: "String", throwable: false),
+    .init(type: "Any?", displayType: "OptionalAny", throwable: true)
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
@@ -87,7 +101,7 @@ func indent(_ indentLevel: Int = 1) -> String {
 }
 
 func acceptFunctionSignature(baseName: String, visitorType: VisitorType) -> String {
-    return "func accept(visitor: \(baseName)\(visitorType.type ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
+    return "func accept(visitor: \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
 }
 
 struct Variable {
@@ -166,13 +180,13 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     
     for visitorType in visitorTypes {
         out+="""
-    protocol \(baseName)\(visitorType.type ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
+    protocol \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
 
     """
         for type in types {
             let typeName = stripStringOfSpaces(type.split(separator: ";")[0])
             out+="""
-        func visit\(typeName)\(visitorType.type ?? "")(\(baseName.lowercased()): \(typeName))\(visitorType.throwable ? " throws" : "") \(visitorType.type == nil ? "" : "-> \(visitorType.type!)")
+        func visit\(typeName)\(visitorType.displayType ?? "")(\(baseName.lowercased()): \(typeName))\(visitorType.throwable ? " throws" : "") \(visitorType.type == nil ? "" : "-> \(visitorType.type!)")
 
     """
         }
@@ -252,7 +266,7 @@ class \(className): \(baseName) {
     for visitorType in visitorTypes {
         out+="""
     \(acceptFunctionSignature(baseName: baseName, visitorType: visitorType)) {
-        \(visitorType.throwable ? "try " : "")visitor.visit\(className)\(visitorType.type ?? "")(\(baseName.lowercased()): self)
+        \(visitorType.throwable ? "try " : "")visitor.visit\(className)\(visitorType.displayType ?? "")(\(baseName.lowercased()): self)
     }
 
 """
