@@ -57,7 +57,8 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr], callsFunction: Int?",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
-    "SetExpr             ; to: Expr, value: Expr",
+    "PropertySetExpr     ; object: Expr, property: Token, propertyId: Int?, value: Expr",
+    "SubscriptSetExpr    ; expression: Expr, index: Expr, value: Expr",
     "AssignExpr          ; to: VariableExpr, annotationColon: Token?, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
     "IsTypeExpr          ; left: Expr, keyword: Token, right: AstType, rightType: QsType?",
     "ImplicitCastExpr    ; expression: Expr"
@@ -113,7 +114,7 @@ func defineAst(outputDir: String, baseName: String, typed: Bool, includesLocatio
     
     let path = "\(outputDir)/\(baseName).swift"
     
-    var out = ""
+    var out = "// swiftlint:disable all\n"
     
     out += """
 protocol \(baseName) {
