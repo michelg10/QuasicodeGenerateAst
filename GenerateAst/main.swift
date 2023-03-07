@@ -57,9 +57,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr], callsFunction: Int?",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
-    "PropertySetExpr     ; object: Expr, property: Token, propertyId: Int?, value: Expr",
-    "SubscriptSetExpr    ; expression: Expr, index: Expr, value: Expr",
-    "AssignExpr          ; to: VariableExpr, annotationColon: Token?, annotation: AstType?, value: Expr, isFirstAssignment: Bool?",
+    "VariableToSetExpr   ; to: VariableExpr, annotationColon: Token?, annotation: AstType?, isFirstAssignment: Bool?",
     "IsTypeExpr          ; left: Expr, keyword: Token, right: AstType, rightType: QsType?",
     "ImplicitCastExpr    ; expression: Expr"
 ], visitorTypes: [
@@ -85,7 +83,9 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
     "BlockStmt           ; statements: [Stmt], scopeIndex: Int?",
-    "ExitStmt            ; keyword: Token"
+    "ExitStmt            ; keyword: Token",
+    "MultiSetStmt        ; setStmts: [SetStmt]", // assignments separated by a comma
+    "SetStmt             ; left: Expr, chained: [Expr], value: Expr"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
     .init(type: nil, throwable: true),
