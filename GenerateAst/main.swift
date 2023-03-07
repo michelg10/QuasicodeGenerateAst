@@ -101,8 +101,8 @@ func indent(_ indentLevel: Int = 1) -> String {
     return value
 }
 
-func acceptFunctionSignature(baseName: String, visitorType: VisitorType) -> String {
-    return "func accept(visitor: \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
+func acceptFunctionSignature(baseName: String, visitorType: VisitorType, isPublic: Bool = true) -> String {
+    return (isPublic ? "public " : "")+"func accept(visitor: \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor)\(visitorType.throwable ? " throws" : "")\(visitorType.type == nil ? "" : " -> \(visitorType.type!)")"
 }
 
 struct Variable {
@@ -117,12 +117,12 @@ func defineAst(outputDir: String, baseName: String, typed: Bool, includesLocatio
     var out = "// swiftlint:disable all\n"
     
     out += """
-internal protocol \(baseName) {
+public protocol \(baseName) {
 
 """
     
     for visitorType in visitorTypes {
-        out += indent()+acceptFunctionSignature(baseName: baseName, visitorType: visitorType) + "\n"
+        out += indent()+acceptFunctionSignature(baseName: baseName, visitorType: visitorType, isPublic: false) + "\n"
     }
     
     if typed {
@@ -181,7 +181,7 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     
     for visitorType in visitorTypes {
         out+="""
-    internal protocol \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
+    public protocol \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
 
     """
         for type in types {
@@ -201,14 +201,14 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
 
 func defineType(out: inout String, baseName: String, className: String, includeFallbackToErrorType: Bool, fieldList: [Variable], visitorTypes: [VisitorType]) {
     out+="""
-internal class \(className): \(baseName) {
+public class \(className): \(baseName) {
 
 """
     print(className)
     // the fields
     for field in fieldList {
         out+="""
-    var \(field.name): \(field.type)
+    public var \(field.name): \(field.type)
 
 """
         print("+ \(field.name): \(field.type)")
@@ -254,7 +254,7 @@ internal class \(className): \(baseName) {
     // the fallback method
     if includeFallbackToErrorType {
         out+="""
-            func fallbackToErrorType(assignable: Bool) {
+            public func fallbackToErrorType(assignable: Bool) {
                 if self.type == nil {
                     self.type = QsErrorType(assignable: assignable)
                 }
