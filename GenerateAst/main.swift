@@ -117,7 +117,7 @@ func defineAst(outputDir: String, baseName: String, typed: Bool, includesLocatio
     var out = "// swiftlint:disable all\n"
     
     out += """
-protocol \(baseName) {
+internal protocol \(baseName) {
 
 """
     
@@ -181,7 +181,7 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
     
     for visitorType in visitorTypes {
         out+="""
-    protocol \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
+    internal protocol \(baseName)\(visitorType.displayType ?? "")\(visitorType.throwable ? "Throw" : "")Visitor {
 
     """
         for type in types {
@@ -201,7 +201,7 @@ func defineVisitor(out: inout String, baseName: String, types: [String], visitor
 
 func defineType(out: inout String, baseName: String, className: String, includeFallbackToErrorType: Bool, fieldList: [Variable], visitorTypes: [VisitorType]) {
     out+="""
-class \(className): \(baseName) {
+internal class \(className): \(baseName) {
 
 """
     print(className)
