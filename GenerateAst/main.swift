@@ -5,7 +5,7 @@ func stripStringOfSpaces(_ str: String.SubSequence) -> String {
     return result
 }
 
-let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/Interpreter/AstClasses"
+let outputDir = "/Users/michel/Desktop/Quasicode/Interpreter/QuasicodeInterpreter/Sources/QuasicodeInterpreter/AstClasses"
 
 struct VisitorType {
     internal init(type: String? = nil, displayType: String? = nil, throwable: Bool) {
