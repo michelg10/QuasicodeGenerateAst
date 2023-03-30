@@ -72,7 +72,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: true, types: [
     "ClassStmt           ; keyword: Token, name: Token, endToken: Token, builtin: Bool, symbolTableIndex: Int?, instanceThisSymbolTableIndex: Int?, staticThisSymbolTableIndex: Int?, scopeIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], fields: [AstClassField]",
     "MethodStmt          ; isStatic: Bool, staticKeyword: Token?, visibilityModifier: VisibilityModifier, function: FunctionStmt",
-    "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, scopeIndex: Int?, params: [AstFunctionParam], annotation: AstType?, body: [Stmt], endOfFunction: Token",
+    "FunctionStmt        ; keyword: Token, name: Token, endToken: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, scopeIndex: Int?, params: [AstFunctionParam], annotation: AstType?, body: [Stmt], endOfFunction: Token",
     "ExpressionStmt      ; expression: Expr",
     "IfStmt              ; condition: Expr, thenBranch: BlockStmt, elseIfBranches: [IfStmt], elseBranch: BlockStmt?",
     "OutputStmt          ; expressions: [Expr]",
@@ -82,7 +82,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "WhileStmt           ; expression: Expr, isDesugaredUntil: Bool, body: BlockStmt",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
-    "BlockStmt           ; statements: [Stmt], scopeIndex: Int?",
+    "BlockStmt           ; statements: [Stmt], scopeIndex: Int?, justBeyondEndOfStatements: InterpreterLocation",
     "ExitStmt            ; keyword: Token",
     "MultiSetStmt        ; setStmts: [SetStmt]", // assignments separated by a comma
     "SetStmt             ; left: Expr, chained: [Expr], value: Expr"
