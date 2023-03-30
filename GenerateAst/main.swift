@@ -69,7 +69,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     .init(type: "Any?", displayType: "OptionalAny", throwable: true)
 ])
 
-defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: false, types: [
+defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: true, types: [
     "ClassStmt           ; keyword: Token, name: Token, builtin: Bool, symbolTableIndex: Int?, instanceThisSymbolTableIndex: Int?, staticThisSymbolTableIndex: Int?, scopeIndex: Int?, templateParameters: [Token]?, expandedTemplateParameters: [AstType]?, superclass: AstClassType?, methods: [MethodStmt], fields: [AstClassField]",
     "MethodStmt          ; isStatic: Bool, staticKeyword: Token?, visibilityModifier: VisibilityModifier, function: FunctionStmt",
     "FunctionStmt        ; keyword: Token, name: Token, symbolTableIndex: Int?, nameSymbolTableIndex: Int?, scopeIndex: Int?, params: [AstFunctionParam], annotation: AstType?, body: [Stmt], endOfFunction: Token",
