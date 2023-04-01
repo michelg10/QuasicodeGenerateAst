@@ -53,7 +53,7 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     "GetExpr             ; object: Expr, property: Token, propertyId: Int?",
     "UnaryExpr           ; opr: Token, right: Expr",
     "CastExpr            ; toType: AstType, value: Expr",
-    "ArrayAllocationExpr ; contains: AstType, capacity: [Expr]",
+    "ArrayAllocationExpr ; baseType: AstType, contains: AstType, capacity: [Expr]",
     "ClassAllocationExpr ; classType: AstClassType, arguments: [Expr], callsFunction: Int?",
     "BinaryExpr          ; left: Expr, opr: Token, right: Expr",
     "LogicalExpr         ; left: Expr, opr: Token, right: Expr",
