@@ -66,7 +66,8 @@ defineAst(outputDir: outputDir, baseName: "Expr", typed: true, includesLocation:
     .init(type: "QsType", throwable: true),
     .init(type: "Expr", throwable: true),
     .init(type: "String", throwable: false),
-    .init(type: "Any?", displayType: "OptionalAny", throwable: true)
+    .init(type: "Any?", displayType: "OptionalAny", throwable: true),
+    .init(type: "Bool", throwable: false)
 ])
 
 defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation: true, types: [
@@ -91,6 +92,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     .init(type: nil, throwable: true),
     .init(type: "Stmt", throwable: false),
     .init(type: "String", throwable: false),
+    .init(type: "Bool", throwable: false)
 ])
 
 func indent(_ indentLevel: Int = 1) -> String {
