@@ -78,7 +78,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "IfStmt              ; condition: Expr, thenBranch: BlockStmt, elseIfBranches: [IfStmt], elseBranch: BlockStmt?",
     "OutputStmt          ; expressions: [Expr]",
     "InputStmt           ; expressions: [Expr]",
-    "ReturnStmt          ; keyword: Token, value: Expr?, isTerminator: Bool",
+    "ReturnStmt          ; keyword: Token, value: Expr?",
     "LoopFromStmt        ; variable: VariableExpr, lRange: Expr, rRange: Expr, body: BlockStmt",
     "WhileStmt           ; expression: Expr, isDesugaredUntil: Bool, body: BlockStmt",
     "BreakStmt           ; keyword: Token",
@@ -86,7 +86,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "BlockStmt           ; statements: [Stmt], scopeIndex: Int?, justBeyondEndOfStatements: InterpreterLocation",
     "ExitStmt            ; keyword: Token",
     "MultiSetStmt        ; setStmts: [SetStmt]", // assignments separated by a comma
-    "SetStmt             ; left: Expr, chained: [Expr], value: Expr"
+    "SetStmt             ; left: Expr, chained: [Expr], value: Expr, typeChecked: Bool"
 ], visitorTypes: [
     .init(type: nil, throwable: false),
     .init(type: nil, throwable: true),
