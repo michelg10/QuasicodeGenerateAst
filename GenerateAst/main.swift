@@ -79,7 +79,7 @@ defineAst(outputDir: outputDir, baseName: "Stmt", typed: false, includesLocation
     "OutputStmt          ; expressions: [Expr]",
     "InputStmt           ; expressions: [Expr]",
     "ReturnStmt          ; keyword: Token, value: Expr?",
-    "LoopFromStmt        ; variable: VariableExpr, lRange: Expr, rRange: Expr, body: BlockStmt",
+    "LoopFromStmt        ; variable: VariableExpr, loopScopeIndex: Int?, lRange: Expr, rRange: Expr, body: BlockStmt",
     "WhileStmt           ; expression: Expr, isDesugaredUntil: Bool, body: BlockStmt",
     "BreakStmt           ; keyword: Token",
     "ContinueStmt        ; keyword: Token",
